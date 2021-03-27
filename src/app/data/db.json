@@ -1,0 +1,38 @@
+{
+  "people": [
+    {
+      "id": 1,
+      "name": "Don Bradman",
+      "status": "aktywny",
+      "nr": 1
+    },
+    {
+      "id": 2,
+      "name": "Sachin Tendulkar",
+      "status": "aktywny",
+      "nr": 1
+    },
+    {
+      "name": "Adam Nowy",
+      "id": 3,
+      "status": "aktywny",
+      "nr": 1
+    },
+    {
+      "name": "aa",
+      "id": 4
+    },
+    {
+      "name": "aa",
+      "id": 5
+    },
+    {
+      "name": "a",
+      "id": 6
+    },
+    {
+      "name": "fgf",
+      "id": 7
+    }
+  ]
+}

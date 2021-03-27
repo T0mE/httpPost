@@ -1,0 +1,7 @@
+<form [formGroup]='form'>
+    <input type="radio" value='a' formControlName='radio2'>
+    <input type="radio" value='b' formControlName='radio2'>
+
+    <button (click)="onPreviewBtnClick($event)">Preview</button>
+    <button (click)="onNextBtnClick($event)" [disabled]='!this.form.valid'>Next</button>
+</form>

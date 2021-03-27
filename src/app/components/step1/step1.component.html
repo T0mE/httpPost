@@ -1,0 +1,13 @@
+<form [formGroup]='form'>
+    <select formControlName='select1'>
+        <option></option>
+        <option *ngFor="let user of data" [value]='user.id'>{{user.name}}</option>
+    </select>
+    <select formControlName='select2'>
+        <option></option>
+        <option *ngFor="let user of data" [value]='user.id'>{{user.name}}</option>
+    </select>
+    <input type="number" formControlName='input'>
+
+    <button (click)="onNextBtnClick($event)">Next</button>
+</form>

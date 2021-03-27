@@ -1,0 +1,12 @@
+<form [formGroup]='form'>
+    <input type="radio" value='a' formControlName='radio'>
+    <input type="radio" value='b' [attr.disabled]="!this.formData.select1.active || null" formControlName='radio'>
+
+    <input #input *ngIf="form.controls.radio.value === 'b'" type="file" formControlName='file' accept=".json"
+        (input)="saveFile($event)">
+
+    <input type="radio" value='c' formControlName='radio' (click)="openDialogWithAttribute()">
+
+    <button (click)="onPreviewBtnClick($event)">Preview</button>
+    <button (click)="onNextBtnClick($event)" [disabled]='!this.form.valid'>Next</button>
+</form>

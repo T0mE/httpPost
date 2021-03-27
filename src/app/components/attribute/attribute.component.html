@@ -1,0 +1,24 @@
+<form *ngIf="attribute" [formGroup]="productForm">
+    <table>
+        <tr>
+            <th> * </th>
+            <th> <button (click)="addQuantity()">Add</button></th>
+        </tr>
+        <tr *ngFor="let quantity of controls; let i = index" formGroupName="{{quantity}}">
+            <td>
+                {{i +1}}
+            </td>
+            <td>
+                <div *ngFor="let control of attribute; let i = index">
+                    <input type="text" formControlName="{{control.idArt}}" placeholder="{{control.name}}">
+                </div>
+            </td>
+            <td>
+                <button (click)="removeQuantity(quantity)">Remove</button>
+            </td>
+        </tr>
+    </table>
+</form>
+<div *ngIf="attribute">
+    {{attribute | json}}
+</div>
