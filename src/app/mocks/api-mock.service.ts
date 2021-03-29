@@ -26,7 +26,7 @@ export class ApiMockService {
   constructor() { }
 
   downloadJson = (): Promise<IClient[]> => {
-    return Promise.resolve(mockData)
+    return Promise.resolve(mockData);
   }
   // getUserList = (): Observable<IClient[]> => {
   //   const subject = new Subject<IClient[]>();

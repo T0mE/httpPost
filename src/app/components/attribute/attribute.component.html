@@ -2,22 +2,26 @@
     <table>
         <tr>
             <th> * </th>
-            <th> <button (click)="addQuantity()">Add</button></th>
+            <th><button [disabled]="!isAllCurrentFormGrupValid || !canAddNewFormGroup"
+                    (click)="addQuantity()">Add</button></th>
         </tr>
-        <tr *ngFor="let quantity of controls; let i = index" formGroupName="{{quantity}}">
+        <tr *ngFor="let formGroupName of controls; let i = index" formGroupName="{{formGroupName}}">
             <td>
-                {{i +1}}
+                {{controls.length - i}}
             </td>
             <td>
                 <div *ngFor="let control of attribute; let i = index">
-                    <input type="text" formControlName="{{control.idArt}}" placeholder="{{control.name}}">
+                    <input type="text" [readonly]='isReadOnly(formGroupName)' formControlName="{{control.attr}}"
+                        placeholder="{{control.name}}">
                 </div>
             </td>
             <td>
-                <button (click)="removeQuantity(quantity)">Remove</button>
+                <button (click)="removeQuantity(formGroupName)">Remove</button>
             </td>
         </tr>
     </table>
+
+    <button (click)="showData()">Ty</button>
 </form>
 <div *ngIf="attribute">
     {{attribute | json}}

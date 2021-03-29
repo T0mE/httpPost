@@ -27,6 +27,8 @@ describe('Step1Component', () => {
 
 
   it('should create', () => {
+    // const btn = (fixture.nativeElement as HTMLDivElement).querySelector('button') as HTMLButtonElement;
+    // btn.click()
     expect(component).toBeTruthy();
   });
 

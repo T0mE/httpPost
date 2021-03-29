@@ -19,13 +19,36 @@ export class AttributeComponent implements OnInit {
   index: number = 0;
   //data: Attribute[];
 
-  constructor(private router: Router, private attri: AttributeService, private fb: FormBuilder, private dataService: DataService) {
+  constructor(private attri: AttributeService, private fb: FormBuilder, private dataService: DataService) {
 
   }
 
   get controls() {
-    return Object.keys(this.productForm.controls);
+    return Object.keys(this.productForm.controls).reverse()
   }
+
+  get canAddNewFormGroup(): boolean {
+    return this.controls.length < +this.dataService.currentFormData.input;
+  }
+
+  get isAllCurrentFormGrupValid(): boolean {
+    const foundInfalidFormGroup = Object.values(this.productForm.controls).find(control => {
+      return control.invalid;
+    })
+
+    return foundInfalidFormGroup ? false : true;
+  }
+
+  isReadOnly(formName: string): boolean {
+    const keys = Object.keys(this.productForm.controls);
+    return keys.indexOf(formName) != keys.length - 1
+  }
+
+
+  showData(): void {
+    console.log(this.productForm.value)
+  }
+
 
   ngOnInit(): void {
     this.getAttributes();
@@ -33,8 +56,8 @@ export class AttributeComponent implements OnInit {
 
   prepareFields(): { [key: string]: AbstractControl; } {
     const preparedFields = {};
-    this.attribute.forEach(({ idArt, required }) => {
-      preparedFields[idArt] = new FormControl('', [required ? Validators.required : undefined])
+    this.attribute.forEach(({ attr, required }) => {
+      preparedFields[attr] = new FormControl('', required ? [Validators.required] : undefined)
     })
     return preparedFields
   }
@@ -42,8 +65,6 @@ export class AttributeComponent implements OnInit {
   getAttributes() {
     this.attri.attr('2').then(data => {
       this.attribute = data;
-
-
       this.productForm = new FormGroup({
         [`attributes-${this.index++}`]: new FormGroup(this.prepareFields())
       });
@@ -53,9 +74,7 @@ export class AttributeComponent implements OnInit {
 
 
   addQuantity() {
-    const index = Object.keys(this.productForm).length
     this.productForm.addControl(`attributes-${this.index++}`, new FormGroup(this.prepareFields()))
-    console.log(this.productForm.controls)
   }
 
   removeQuantity(controlName: string) {
