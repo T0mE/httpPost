@@ -102,6 +102,10 @@ export class Step2Component implements OnInit, OnDestroy {
   }
 
   openDialogWithAttribute() {
+    setTimeout(() => {
+      this.dataService.addFormData({ radio: this.form.controls.radio.value });
+    }, 100)
+
     this.dialogRef = this.dialog.open(AttributeComponent), {
       disableClose: false
     }

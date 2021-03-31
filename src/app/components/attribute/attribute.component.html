@@ -1,3 +1,4 @@
+<button *ngIf="attribute" [disabled]="productForm.valid ? canAddNewFormGroup : true" (click)="saveForm()">Save</button>
 <form *ngIf="attribute" [formGroup]="productForm">
     <table>
         <tr>

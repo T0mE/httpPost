@@ -9,16 +9,13 @@ import { FormData as FormDataInterface } from './../../services/data.service'
 })
 export class Step4Component implements OnInit {
 
-  data;
+  data: any;
   constructor(private router: Router, private dataService: DataService) {
-    this.data = this.dataService.currentFormData;
+    this.data = Object.entries(this.dataService.currentFormData);
   }
 
 
   ngOnInit(): void {
 
-  }
-  step() {
-    const { select1: { name }, input } = this.data;
   }
 }

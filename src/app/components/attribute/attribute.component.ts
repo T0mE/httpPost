@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { AttributeService } from 'src/app/services/attribute.service';
 import { DataService } from 'src/app/services/data.service';
@@ -19,7 +20,8 @@ export class AttributeComponent implements OnInit {
   index: number = 0;
   //data: Attribute[];
 
-  constructor(private attri: AttributeService, private fb: FormBuilder, private dataService: DataService) {
+
+  constructor(public dialog: MatDialogRef<AttributeComponent>, private router: Router, private attri: AttributeService, private fb: FormBuilder, private dataService: DataService) {
 
   }
 
@@ -28,6 +30,7 @@ export class AttributeComponent implements OnInit {
   }
 
   get canAddNewFormGroup(): boolean {
+    console.log(this.controls.length < +this.dataService.currentFormData.input)
     return this.controls.length < +this.dataService.currentFormData.input;
   }
 
@@ -45,8 +48,70 @@ export class AttributeComponent implements OnInit {
   }
 
 
-  showData(): void {
-    console.log(this.productForm.value)
+  // showData(): void {
+  //   let result = [];
+  //   const dataBase = [];
+
+  //   for (const elemet of this.controls) {
+  //     result.push(this.productForm.controls[elemet].value)
+  //   }
+
+  //   const keyObject = Object.keys(result[0])
+  //   const sizeArray = result.length
+
+  //   result.reverse();
+  //   for (const el of keyObject) {
+  //     let i = 1;
+  //     let a = '';
+
+
+  //     result.forEach(item => {
+  //       if (item[el] !== '') {
+  //         i === sizeArray ? a += `"${i}": "${item[el]}"` : a += `"${i}": "${item[el]}",`
+  //       }
+  //       i++;
+  //     });
+
+  //     console.log(a);
+  //     const data = `{ "dicAttr": ${el}, value : {${a}}}`;
+  //     dataBase.push(data)
+  //   }
+  //   console.log(dataBase);
+
+
+  // }
+
+  showData(): Object {
+    const { value } = this.productForm;
+    const elName = 'dicAttr';
+    const res = [];
+    Object.values(value).forEach((group, indexOfFormGrop) => {
+      Object.entries(group).forEach(([key, value]) => {
+        if (value !== '') {
+          const foundElement = res.find(el => el[elName] === key);
+          if (!foundElement) {
+            res.push({
+              [elName]: key,
+              value: {
+                [indexOfFormGrop + 1]: value
+              }
+            })
+          } else {
+            const index = res.indexOf(foundElement);
+            res[index].value[indexOfFormGrop + 1] = value
+          }
+        }
+
+      })
+    })
+    return res;
+  }
+
+  saveForm() {
+    const dataToSave = this.showData();
+    this.dataService.addFormData({ resp: dataToSave })
+    this.dialog.close();
+    this.router.navigate(['step', '3']);
   }
 
 
@@ -63,10 +128,10 @@ export class AttributeComponent implements OnInit {
   }
 
   getAttributes() {
-    this.attri.attr('2').then(data => {
+    this.attri.attr('1').then(data => {
       this.attribute = data;
       this.productForm = new FormGroup({
-        [`attributes-${this.index++}`]: new FormGroup(this.prepareFields())
+        [`attributes - ${this.index++}`]: new FormGroup(this.prepareFields())
       });
       this.productForm.controls
     })
@@ -74,7 +139,7 @@ export class AttributeComponent implements OnInit {
 
 
   addQuantity() {
-    this.productForm.addControl(`attributes-${this.index++}`, new FormGroup(this.prepareFields()))
+    this.productForm.addControl(`attributes - ${this.index++}`, new FormGroup(this.prepareFields()))
   }
 
   removeQuantity(controlName: string) {
