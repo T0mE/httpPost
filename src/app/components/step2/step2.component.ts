@@ -26,25 +26,25 @@ export class Step2Component implements OnInit, OnDestroy {
   constructor(private router: Router, private dataService: DataService, private apiService: ApiServiceService, public dialog: MatDialog) {
     this.formData = this.dataService.currentFormData
     console.log(this.formData)
-    const { radio, file } = this.formData
+    const { radio } = this.formData
 
     const isSelectedElementActive = this.formData.select1.active;
 
     this.form = new FormGroup({
-      radio: new FormControl(isSelectedElementActive ? radio : 'a', [Validators.required]),
+      radio: new FormControl(isSelectedElementActive ? radio : '1', [Validators.required]),
     });
 
     this.form.updateValueAndValidity();
 
     console.log(this.form)
 
-    if (radio === 'b') {
+    if (radio === '2') {
       this.form.addControl('file', new FormControl('', [Validators.required]));
     }
 
     this._subscription = this.form.valueChanges.subscribe(formData => {
       const { radio } = formData;
-      if (radio === 'a') {
+      if (radio === '1') {
         if (this.form.controls.file) {
           this.form.removeControl('file');
         }
@@ -75,7 +75,7 @@ export class Step2Component implements OnInit, OnDestroy {
 
   async fileValidator(file: File, control: AbstractControl): Promise<ValidationErrors | null> {
     try {
-      const { select1: id, select2: response } = this.dataService.currentFormData;
+      // const { select1: id, select2: response } = this.dataService.currentFormData;
       const resp = await this.apiService.validJsonFile(file);
       console.log(resp)
       this.dataService.addFormData({ resp })

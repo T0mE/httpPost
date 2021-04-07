@@ -5,3 +5,11 @@ export interface Attribute {
     required: boolean,
     client: number
 }
+
+export interface AttributeFromForm {
+    [key: string]: AttributeFromFormGroup
+}
+
+export interface AttributeFromFormGroup {
+    [key: string]: string;
+}

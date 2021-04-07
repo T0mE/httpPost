@@ -1,13 +1,14 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { IClient } from '../type/client';
+import { IOutputData } from '../type/outputData';
 
 export interface FormData {
   select1?: IClient,
   select2?: IClient,
   input?: string | null,
   radio?: string,
-  resp?: any,
+  resp?: IOutputData[],
   radio2?: string,
   file?: File
 }

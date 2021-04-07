@@ -1,9 +1,9 @@
 <form [formGroup]='form'>
-    <input type="radio" value='a' formControlName='radio'>
-    <input type="radio" value='b' [attr.disabled]="!this.formData.select1.active || null" formControlName='radio'>
-    <input type="radio" value='c' formControlName='radio' (click)="openDialogWithAttribute()">
+    <input type="radio" value='1' formControlName='radio'>
+    <input type="radio" value='2' [attr.disabled]="!this.formData.select1.active || null" formControlName='radio'>
+    <input type="radio" value='3' formControlName='radio' (click)="openDialogWithAttribute()">
 
-    <input #input *ngIf="form.controls.radio.value === 'b'" type="file" formControlName='file' accept=".json"
+    <input #input *ngIf="form.controls.radio.value === '2'" type="file" formControlName='file' accept=".json"
         (input)="saveFile($event)">
 
 

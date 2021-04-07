@@ -4,7 +4,8 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { AttributeService } from 'src/app/services/attribute.service';
 import { DataService } from 'src/app/services/data.service';
-import { Attribute } from 'src/app/type/attribute';
+import { Attribute, AttributeFromForm, AttributeFromFormGroup } from 'src/app/type/attribute';
+import { IOutputData } from 'src/app/type/outputData';
 
 @Component({
   selector: 'app-attribute',
@@ -18,10 +19,25 @@ export class AttributeComponent implements OnInit {
   productForm: FormGroup;
   attribute: Attribute[] | null;
   index: number = 0;
-  //data: Attribute[];
 
 
   constructor(public dialog: MatDialogRef<AttributeComponent>, private router: Router, private attri: AttributeService, private fb: FormBuilder, private dataService: DataService) {
+    const testdata = [
+      {
+        "dicAttr": 4,
+        "value": { "1": "Grzegorz", "2": "Michal", "3": "Patryk", "4": "Maks" }
+      },
+      {
+        "dicAttr": 5,
+        "value": { "1": "Kowalski", "3": "Jankowski" }
+      },
+      {
+        "dicAttr": 6,
+        "value": { "1": "Syrop", "4": "Sok" }
+      }
+    ];
+    console.log(this.rebuildData(testdata))
+
 
   }
 
@@ -81,7 +97,7 @@ export class AttributeComponent implements OnInit {
 
   // }
 
-  showData(): Object {
+  showData(): IOutputData[] {
     const { value } = this.productForm;
     const elName = 'dicAttr';
     const res = [];
@@ -119,22 +135,69 @@ export class AttributeComponent implements OnInit {
     this.getAttributes();
   }
 
-  prepareFields(): { [key: string]: AbstractControl; } {
+  prepareFields(attributeFromForm?: AttributeFromForm): { [key: string]: AbstractControl; } {
     const preparedFields = {};
-    this.attribute.forEach(({ attr, required }) => {
-      preparedFields[attr] = new FormControl('', required ? [Validators.required] : undefined)
+    this.attribute.forEach((attribute) => {
+      const { attr, required } = attribute
+      const fieldValue = attributeFromForm ? attributeFromForm[attr] : '';
+      console.log(attributeFromForm, attribute)
+      preparedFields[attr] = new FormControl(fieldValue, required ? [Validators.required] : undefined)
     })
     return preparedFields
   }
 
+  prepareFormGroup(attributesFromForm: AttributeFromForm[]): FormGroup {
+    const mainFormGroupObj = {};
+    attributesFromForm.forEach((group, index) => {
+      mainFormGroupObj[`attributes - ${index}`] = new FormGroup(this.prepareFields(group))
+    })
+
+    return new FormGroup(mainFormGroupObj)
+  }
+
   getAttributes() {
+    const { resp } = this.dataService.currentFormData;
     this.attri.attr('1').then(data => {
       this.attribute = data;
-      this.productForm = new FormGroup({
-        [`attributes - ${this.index++}`]: new FormGroup(this.prepareFields())
-      });
-      this.productForm.controls
+      if (resp) {
+        const correctValue = this.rebuildData(resp);
+        this.productForm = this.prepareFormGroup(correctValue);
+      } else {
+        this.productForm = new FormGroup({
+          [`attributes - ${this.index++}`]: new FormGroup(this.prepareFields())
+        });
+      }
+
     })
+  }
+
+  rebuildData(data: IOutputData[]): AttributeFromForm[] {
+    const formGroupObj = {};
+    const keyname = 'dicAttr';
+    const formData = [];
+    data.forEach(el => {
+      formGroupObj[el[keyname]] = null;
+    })
+    const keys = Object.keys(formGroupObj);
+
+
+    data.forEach((el, index) => { //typy
+      const obj = Object.entries(el.value)
+      const currentAttrubuteNumber = keys[index];
+      const foundArrayEl = formData.find(el => el[currentAttrubuteNumber] === null); // sprawdzamy czy istnieje obieklt z takim kluczem atrybutu
+      obj.forEach(([key, value], indexEl) => { // wartosci danego typu
+        if (foundArrayEl) {
+          const indexOfFoundFormEl = +key - 1;
+          formData[indexOfFoundFormEl][currentAttrubuteNumber] = value;// sprawdzic linijke
+        } else {
+          const newFormGroupObj = Object.assign({}, formGroupObj);
+          newFormGroupObj[currentAttrubuteNumber] = value;
+          formData.push(newFormGroupObj);
+        }
+      })
+    })
+
+    return formData;
   }
 
 
