@@ -7,6 +7,8 @@ import { DataService } from 'src/app/services/data.service';
 import { IClient } from 'src/app/type/client';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { MatDialog, MatDialogActions, MatDialogRef } from '@angular/material/dialog';
+import { InfoComponent } from '../info/info.component';
 
 
 @Component({
@@ -18,9 +20,10 @@ export class Step1Component implements OnInit {
 
   form: FormGroup
   data: IClient[] = [];
+  dialogRef: MatDialogRef<InfoComponent>;
 
 
-  constructor(private router: Router, private dataService: DataService, private client: ClientService) {
+  constructor(private router: Router, private dataService: DataService, private client: ClientService, public dialog: MatDialog) {
     const { select1, select2, input } = this.dataService.currentFormData
     this.form = new FormGroup({
       select1: new FormControl(select1 ? select1.id : '', [Validators.required]),
@@ -41,17 +44,53 @@ export class Step1Component implements OnInit {
     })
   }
 
+  modalConfirmObservable(input: string): Observable<boolean> | null {
 
+    const { value } = this.form.get('input');
 
-  onNextBtnClick(event) {
-    event.preventDefault();
-    console.log(this.form)
-    if (this.form.valid) {
-      const selectData = this.data.find(({ id }) => id === parseInt(this.form.controls.select1.value))
-      const selectData2 = this.data.find(({ id }) => id === parseInt(this.form.controls.select2.value))
-      console.log(selectData2);
-      this.dataService.addFormData({ ...this.form.value, select1: selectData, select2: selectData2 });
-      this.router.navigate(['step', '2']);
+    if (value !== input) {
+      this.dialogRef = this.dialog.open(InfoComponent, {
+        disableClose: false,
+        data: {
+          message: value > input ? 'Zwiekasz liczbe zamowien?' : 'Zmniejszasz liczbe zamowien?'
+        }
+      })
+
+      return this.dialogRef.afterClosed();
     }
+
+  }
+
+
+  onNextBtnClick(event: MouseEvent): void {
+    event.preventDefault();
+    if (this.form.invalid) {
+      return
+    }
+
+    const { input } = this.dataService.currentFormData;
+    if (!input) {
+      this.processFormData();
+      return
+    }
+
+    const subscription = this.modalConfirmObservable(input).subscribe(result => {
+      if (result) {
+        this.processFormData();
+      }
+
+      subscription.unsubscribe();
+    })
+  }
+
+  processFormData(): void {
+    const selectData = this.data.find(({ id }) => id === parseInt(this.form.controls.select1.value))
+    const selectData2 = this.data.find(({ id }) => id === parseInt(this.form.controls.select2.value))
+    const { select1, input } = this.dataService.currentFormData;
+    if ((select1 && select1.id !== selectData.id) || (input && input != this.form.controls.input.value)) {
+      this.dataService.clearData();
+    }
+    this.dataService.addFormData({ ...this.form.value, select1: selectData, select2: selectData2 });
+    this.router.navigate(['step', '2']);
   }
 }

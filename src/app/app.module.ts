@@ -18,6 +18,7 @@ import { Step4Component } from './components/step4/step4.component';
 import { DialogComponent } from './components/dialog/dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { AttributeComponent } from './components/attribute/attribute.component';
+import { InfoComponent } from './components/info/info.component';
 
 
 @NgModule({
@@ -32,6 +33,7 @@ import { AttributeComponent } from './components/attribute/attribute.component';
     Step4Component,
     DialogComponent,
     AttributeComponent,
+    InfoComponent,
 
   ],
   imports: [

@@ -22,21 +22,21 @@ export class AttributeComponent implements OnInit {
 
 
   constructor(public dialog: MatDialogRef<AttributeComponent>, private router: Router, private attri: AttributeService, private fb: FormBuilder, private dataService: DataService) {
-    const testdata = [
-      {
-        "dicAttr": 4,
-        "value": { "1": "Grzegorz", "2": "Michal", "3": "Patryk", "4": "Maks" }
-      },
-      {
-        "dicAttr": 5,
-        "value": { "1": "Kowalski", "3": "Jankowski" }
-      },
-      {
-        "dicAttr": 6,
-        "value": { "1": "Syrop", "4": "Sok" }
-      }
-    ];
-    console.log(this.rebuildData(testdata))
+    // const testdata = [
+    //   {
+    //     "dicAttr": 4,
+    //     "value": { "1": "Grzegorz", "2": "Michal", "3": "Patryk", "4": "Maks" }
+    //   },
+    //   {
+    //     "dicAttr": 5,
+    //     "value": { "1": "Kowalski", "3": "Jankowski" }
+    //   },
+    //   {
+    //     "dicAttr": 6,
+    //     "value": { "1": "Syrop", "4": "Sok" }
+    //   }
+    // ];
+    // console.log(this.rebuildData(testdata))
 
 
   }
@@ -97,25 +97,23 @@ export class AttributeComponent implements OnInit {
 
   // }
 
-  showData(): IOutputData[] {
+  rebuildDataToDBFormat(): IOutputData[] {
     const { value } = this.productForm;
     const elName = 'dicAttr';
     const res = [];
     Object.values(value).forEach((group, indexOfFormGrop) => {
       Object.entries(group).forEach(([key, value]) => {
-        if (value !== '') {
-          const foundElement = res.find(el => el[elName] === key);
-          if (!foundElement) {
-            res.push({
-              [elName]: key,
-              value: {
-                [indexOfFormGrop + 1]: value
-              }
-            })
-          } else {
-            const index = res.indexOf(foundElement);
-            res[index].value[indexOfFormGrop + 1] = value
-          }
+        const foundElement = res.find(el => el[elName] === key);
+        if (!foundElement) {
+          res.push({
+            [elName]: key,
+            value: {
+              [indexOfFormGrop + 1]: value === '' ? undefined : value
+            }
+          })
+        } else {
+          const index = res.indexOf(foundElement);
+          res[index].value[indexOfFormGrop + 1] = value
         }
 
       })
@@ -124,7 +122,7 @@ export class AttributeComponent implements OnInit {
   }
 
   saveForm() {
-    const dataToSave = this.showData();
+    const dataToSave = this.rebuildDataToDBFormat();
     this.dataService.addFormData({ resp: dataToSave })
     this.dialog.close();
     this.router.navigate(['step', '3']);
@@ -151,6 +149,7 @@ export class AttributeComponent implements OnInit {
     attributesFromForm.forEach((group, index) => {
       mainFormGroupObj[`attributes - ${index}`] = new FormGroup(this.prepareFields(group))
     })
+    this.index = attributesFromForm.length;
 
     return new FormGroup(mainFormGroupObj)
   }

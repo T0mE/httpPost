@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import * as data from './../../data/db.json';
+// import * as data from './../../data/db.json';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { ApiServiceService } from 'src/app/services/api-service.service';
 import { IClient } from 'src/app/type/client';
