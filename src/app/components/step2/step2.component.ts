@@ -4,6 +4,7 @@ import { AbstractControl, FormControl, FormGroup, Validators, ValidationErrors }
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { RadioEnum } from 'src/app/data/radio.enum';
 import { ApiServiceService } from 'src/app/services/api-service.service';
 import { DataService, FormData } from 'src/app/services/data.service';
 import { Attribute } from 'src/app/type/attribute';
@@ -20,6 +21,7 @@ export class Step2Component implements OnInit, OnDestroy {
   public form: FormGroup
   public file: File;
   public formData: FormData
+  public RadioEnum = RadioEnum;
 
   @ViewChild('input') input: ElementRef<HTMLInputElement>;
 
@@ -31,20 +33,19 @@ export class Step2Component implements OnInit, OnDestroy {
     const isSelectedElementActive = this.formData.select1.active;
 
     this.form = new FormGroup({
-      radio: new FormControl(isSelectedElementActive ? radio : '1', [Validators.required]),
+      radio: new FormControl(isSelectedElementActive ? radio : RadioEnum.NoData, [Validators.required]),
     });
 
     this.form.updateValueAndValidity();
 
-    console.log(this.form)
-
-    if (radio === '2') {
+    if (radio === RadioEnum.File) {
       this.form.addControl('file', new FormControl('', [Validators.required]));
     }
 
     this._subscription = this.form.valueChanges.subscribe(formData => {
       const { radio } = formData;
-      if (radio === '1') {
+      console.log(radio)
+      if (radio === RadioEnum.NoData || radio === RadioEnum.CustomData) {
         if (this.form.controls.file) {
           this.form.removeControl('file');
         }
@@ -53,6 +54,33 @@ export class Step2Component implements OnInit, OnDestroy {
       }
     })
   }
+
+  get inNextBtnDisabled(): boolean {
+    console.log(this.form)
+    if (!this.form.valid) {
+      console.log('x');
+      return true
+    }
+
+    console.log(this.form.controls.radio.value === RadioEnum.NoData)
+    console.log(!this.isGoodCount)
+    return this.form.controls.radio.value === RadioEnum.NoData ? false : !this.isGoodCount
+  }
+
+  get isGoodCount(): boolean {
+    const { input, resp } = this.dataService.currentFormData
+    if (!resp) return false;
+    let max = 0;
+    resp.forEach(attr => {
+      const { length } = Object.keys(attr.value || {});
+      if (length > max) {
+        max = length;
+      }
+    });
+
+    return max == +input;
+  }
+
   dialogRef: MatDialogRef<AttributeComponent>
 
   ngOnInit(): void {
@@ -90,7 +118,8 @@ export class Step2Component implements OnInit, OnDestroy {
     event.preventDefault();
     console.log(this.form)
     if (this.form.valid) {
-      this.dataService.addFormData(this.form.value);
+      const { value: radioValue } = this.form.controls.radio
+      this.dataService.addFormData({ radio: radioValue });
       this.router.navigate(['step', '3']);
     }
   }
@@ -98,17 +127,27 @@ export class Step2Component implements OnInit, OnDestroy {
   onPreviewBtnClick(event) {
     event.preventDefault();
 
+    if (this.dataService.currentFormData.radio === RadioEnum.File) {
+      this.dataService.clearDataByFieldName(['resp'])
+    }
+
     this.router.navigate(['step', '1']);
   }
 
   openDialogWithAttribute() {
     setTimeout(() => {
+      console.log(typeof this.form.controls.radio.value)
       this.dataService.addFormData({ radio: this.form.controls.radio.value });
     }, 100)
 
-    this.dialogRef = this.dialog.open(AttributeComponent), {
-      disableClose: false
+    if (this.dataService.currentFormData.radio === RadioEnum.File) {
+      this.dataService.clearDataByFieldName(['resp'])
     }
+
+
+    this.dialogRef = this.dialog.open(AttributeComponent, {
+      disableClose: true
+    });
   }
 
 }

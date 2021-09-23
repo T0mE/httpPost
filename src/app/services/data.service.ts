@@ -1,20 +1,24 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
+import { RadioEnum } from '../data/radio.enum';
 import { IClient } from '../type/client';
+import { Label } from '../type/label';
 import { IOutputData } from '../type/outputData';
 
 export interface FormData {
-  select1?: IClient,
-  select2?: IClient,
-  input?: string | null,
-  radio?: string,
-  resp?: IOutputData[],
-  radio2?: string,
-  file?: File
+  select1?: IClient;
+  select2?: IClient;
+  input?: string | null;
+  radio?: RadioEnum;
+  resp?: IOutputData[];
+  radio2?: string;
+  file?: File;
+  label?: Label;
+  disableSelect?: boolean;
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DataService implements OnDestroy {
   private _currentFormData: FormData = {};
@@ -25,14 +29,12 @@ export class DataService implements OnDestroy {
   }
 
   constructor() {
-    this._data$.subscribe(data => {
-      if (data.select1 !== undefined) { this._currentFormData.select1 = data.select1; }
-      if (data.select2 !== undefined) { this._currentFormData.select2 = data.select2; }
-      if (data.input !== undefined) { this._currentFormData.input = data.input; }
-      if (data.radio !== undefined) { this._currentFormData.radio = data.radio; }
-      if (data.resp !== undefined) { this._currentFormData.resp = data.resp; }
-      if (data.radio2 !== undefined) { this._currentFormData.radio2 = data.radio2; }
-      if (data.file !== undefined) { this._currentFormData.file = data.file; }
+    this._data$.subscribe((data) => {
+      Object.entries(data).forEach(([key, value]) => {
+        if (data[key] !== undefined) {
+          this._currentFormData[key] = value;
+        }
+      });
     });
   }
 
@@ -44,8 +46,15 @@ export class DataService implements OnDestroy {
     this._currentFormData = {};
   }
 
+  clearDataByFieldName(keys: string[]): void {
+    keys.forEach((key) => {
+      this._currentFormData[key] = undefined;
+    });
+  }
+
   addFormData(newData: FormData): void {
-    this._data$.next(newData)
+    console.log(this, newData);
+    this._data$.next(newData);
   }
 
   getFormObservable(): Observable<FormData> {
@@ -55,5 +64,4 @@ export class DataService implements OnDestroy {
   getFormSubject(): Subject<FormData> {
     return this._data$;
   }
-
 }

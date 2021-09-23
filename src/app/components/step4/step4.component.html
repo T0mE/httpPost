@@ -1,4 +1,18 @@
 <div>
-    <p *ngFor='let field of data'>{{field[0] }} -> {{field[1] | json}}</p>
-    <!-- <p>{{data.select1.name}}</p> -->
+  <p *ngFor="let field of data">{{ field[0] }} -> {{ field[1] | json }}</p>
+  <!-- <p>{{data.select1.name}}</p> -->
 </div>
+<input
+  type="text"
+  placeholder="Pick one"
+  aria-label="Number"
+  matInput
+  [formControl]="searchLabel"
+  [matAutocomplete]="auto"
+/>
+<mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+  <mat-option *ngFor="let option of filterOption | async" [value]="option">
+    {{ option }}
+  </mat-option>
+</mat-autocomplete>
+<

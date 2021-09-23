@@ -19,7 +19,7 @@ import { DialogComponent } from './components/dialog/dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { AttributeComponent } from './components/attribute/attribute.component';
 import { InfoComponent } from './components/info/info.component';
-
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @NgModule({
   declarations: [
@@ -34,7 +34,6 @@ import { InfoComponent } from './components/info/info.component';
     DialogComponent,
     AttributeComponent,
     InfoComponent,
-
   ],
   imports: [
     BrowserModule,
@@ -45,9 +44,10 @@ import { InfoComponent } from './components/info/info.component';
     BrowserAnimationsModule,
     MatPaginatorModule,
     ReactiveFormsModule,
-    MatDialogModule
+    MatDialogModule,
+    MatAutocompleteModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

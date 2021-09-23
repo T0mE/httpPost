@@ -43,7 +43,7 @@ describe('DialogComponent', () => {
     })
       .compileComponents();
 
-    mockServ = TestBed.get(ApiMockService);
+    // mockServ = TestBed.get(ApiMockService);
   }));
 
   beforeEach(() => {

@@ -1,13 +1,16 @@
 <form [formGroup]='form'>
-    <input type="radio" value='1' formControlName='radio'>
-    <input type="radio" value='2' [attr.disabled]="!this.formData.select1.active || null" formControlName='radio'>
-    <input type="radio" value='3' formControlName='radio' (click)="openDialogWithAttribute()">
+    <input type="radio" [value]='RadioEnum.NoData' formControlName='radio'
+        [attr.disabled]="this.formData.select1.active || null">
+    <input type="radio" [value]='RadioEnum.File' [attr.disabled]="!this.formData.select1.active || null"
+        formControlName='radio'>
+    <input type="radio" [value]='RadioEnum.CustomData' [attr.disabled]="!this.formData.select1.active || null"
+        formControlName='radio' (click)="openDialogWithAttribute()">
 
-    <input #input *ngIf="form.controls.radio.value === '2'" type="file" formControlName='file' accept=".json"
+    <input #input *ngIf="form.controls.radio.value === RadioEnum.File" type="file" formControlName='file' accept=".json"
         (input)="saveFile($event)">
 
 
 
     <button (click)="onPreviewBtnClick($event)">Preview</button>
-    <button (click)="onNextBtnClick($event)" [disabled]='!this.form.valid'>Next</button>
+    <button (click)="onNextBtnClick($event)" [disabled]='inNextBtnDisabled'>Next</button>
 </form>

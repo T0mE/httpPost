@@ -1,6 +1,6 @@
 export interface IClient {
-    id: number;
-    name: string;
-    empid: string;
-    active: boolean;
+  id_client: number;
+  name: string;
+  empid: string;
+  active: boolean;
 }
